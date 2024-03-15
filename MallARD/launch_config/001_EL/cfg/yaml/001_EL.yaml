@@ -1,0 +1,39 @@
+# params for El-MallARD
+
+#joystick gains
+cfg_joy_linear_gain: 1.0
+cfg_joy_angular_gain: 0.7
+
+#Radius of the wheel in m
+cfg_R: 0.05
+#Distance from wheel center to x axis from body fram in m
+cfg_lx: 0.15
+#Distance from wheel center to y axis from body frame in m
+cfg_ly: 0.15
+#Mass in kg
+cfg_M: 20
+#moment of inertia in kgm^2
+cfg_I: 0.61
+#Non linear drag coeff in x
+cfg_Cu: -29
+#Non linear drag coeff in y
+cfg_Cv: -25
+#Non linear drag coeff for rotation
+cfg_Cr: -1
+#linear drag coeff in x
+cfg_Cu_l: 2
+#linear drag coeff in y
+cfg_Cv_l: 2
+#linear drag coeff for rotation
+cfg_Cr_l: 0.1
+#Value used to calculate the angle of rotation. Chosen small to approximate dt-from a derivative
+cfg_deltaT: 0.01
+
+#control parameters
+cfg_kp: 5
+cfg_kd: 5
+cfg_kp_psi: 1
+cfg_kd_psi: 1
+cfg_lim: 3
+cfg_lim_psi: 2
+cfg_nv: 4

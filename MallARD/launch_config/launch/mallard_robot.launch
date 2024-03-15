@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Get MALLARD_VERSION -->
+    <arg name="ARG_MALLARD_VERSION" value="$(optenv MALLARD_VERSION 003_REAL)" />
+
+    <!-- El-MallARD -->
+    <group if="$(eval ARG_MALLARD_VERSION == '001_EL')">
+        <include file="$(find launch_config)/launch/robot/el_mallard.launch"/>
+    </group>
+
+    <!-- MallARD_002 -->
+    <group if="$(eval ARG_MALLARD_VERSION == '002_REAL')">
+        <include file="$(find launch_config)/launch/robot/mallard_002.launch"/>
+    </group>
+
+    <!-- MallARD_002a -->
+    <group if="$(eval ARG_MALLARD_VERSION == '002a_REAL')">
+        <include file="$(find launch_config)/launch/robot/mallard_002a.launch"/>
+    </group>
+
+    <!-- MallARD_003 -->
+    <group if="$(eval ARG_MALLARD_VERSION == '003_REAL')">
+        <include file="$(find launch_config)/launch/robot/mallard_003.launch"/>
+    </group>
+</launch>

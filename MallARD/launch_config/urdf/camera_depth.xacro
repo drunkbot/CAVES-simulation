@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mallard">
+    <xacro:property name="camera_name" value="depth_camera" />
+    <xacro:macro name="camera1" params="parent camera_name *origin">
+
+        <joint name="${camera_name}_joint" type="fixed">
+            <xacro:insert_block name="origin"/>
+            <pose>0 0 0 0 0 0</pose>
+            <!-- <xacro:insert_block name="origin"/> -->
+            <parent link="${parent}" />
+            <child link="${camera_name}_link"/>
+        </joint>
+
+        <link name="${camera_name}_link">
+            <pose>0 0 0 0 0 0</pose>
+            <inertial>
+                <mass value="1e-10"/>
+                <inertia ixx="1e-06" ixy="0.0" ixz="0.0" iyy="1e-06" iyz="0.0" izz="1e-06"/>
+                <mass>1e-10</mass>
+            </inertial>
+        </link>
+        <joint name="camera_optical_joint" type="fixed">
+            <parent link="${camera_name}_link"/>
+            <child link="camera_link_optical"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </joint>
+        <link name="camera_link_optical"></link>
+
+        <gazebo reference="${camera_name}_link">
+            <sensor name="${camera_name}" type="depth">
+                <plugin name="gazebo_ros_openni_kinect" filename="libgazebo_ros_openni_kinect.so">
+                <updateRate>1.0</updateRate>
+                <cameraName>depth_cam</cameraName>
+                <imageTopicName>/depth_cam/color/image_raw</imageTopicName>
+                <cameraInfoTopicName>/depth_cam/color/camera_info</cameraInfoTopicName>
+                <depthImageTopicName>/depth_cam/depth/image_raw</depthImageTopicName>
+                <depthImageCameraInfoTopicName>/depth_cam/depth/camera_info</depthImageCameraInfoTopicName>
+                <pointCloudTopicName>/depth_cam/depth/points</pointCloudTopicName>
+                <frameName>camera_link</frameName>
+                <pointCloudCutoff>0</pointCloudCutoff>
+                <pointCloudCutoffMax>5</pointCloudCutoffMax>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>

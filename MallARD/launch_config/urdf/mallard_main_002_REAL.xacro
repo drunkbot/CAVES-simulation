@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<robot name="mallard" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find launch_config)/urdf/lidar_sensor_sick_tim.xacro"/>
+  <!-- <xacro:include filename="$(find launch_config)/urdf/ballast.xacro"/> -->
+  <xacro:include filename="$(find launch_config)/urdf/thruster_REAL.xacro"/>
+
+  <!-- Thrusters components & constants -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="tr1" value="0.02" />
+  <xacro:property name="tl1" value="0.112" />
+  <xacro:property name="tr2" value="0.0475" />
+  <xacro:property name="tl2" value="0.044" />
+
+  <!-- <gazebo reference="base_link">
+      <material>Gazebo/Blue</material>
+  </gazebo> -->
+
+  <link name="base_link">
+      <!-- Bridges (connecting elements) -->
+      <!-- Top Bridges -->
+      <visual name="top_bridge_left">
+        <geometry> 
+          <box size="0.268 0.04 0.012"/>
+        </geometry>
+        <origin  xyz="0 0.114 0.0635"/>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+
+      <visual name="top_bridge_right">
+        <geometry> 
+          <box size="0.268 0.04 0.012"/>
+        </geometry>
+        <origin  xyz="0 -0.114 0.0635"/>
+      </visual>
+
+      <visual name="top_bridge_front">
+        <geometry> 
+          <box size="0.04 0.268 0.012"/>
+        </geometry>
+        <origin  xyz="0.154 0 0.0635"/>
+      </visual>
+
+      <visual name="top_bridge_rear">
+        <geometry> 
+          <box size="0.04 0.268 0.012"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+        <origin  xyz="-0.154 0 0.0635"/>
+      </visual>
+
+      <!-- Bottom Bridges -->
+      <visual name="bottom_bridge_front">
+        <geometry> 
+          <box size="0.06 0.448 0.012"/>
+        </geometry>
+        <origin  xyz="0.149 0 -0.0635"/>
+      </visual>
+
+      <visual name="bottom_bridge_rear">
+        <geometry> 
+          <box size="0.06 0.448 0.012"/>
+        </geometry>
+        <origin  xyz="-0.149 0 -0.0635"/>
+      </visual>
+
+      <visual name="bottom_bridge_left">
+        <geometry> 
+          <box size="0.238 0.094 0.012"/>
+        </geometry>
+        <origin  xyz="0 0.177 -0.0635"/>
+      </visual>
+      
+      <visual name="bottom_bridge_right">
+        <geometry> 
+          <box size="0.238 0.094 0.012"/>
+        </geometry>
+        <origin  xyz="0 -0.177 -0.0635"/>
+      </visual>
+
+      <!-- Tubes -->
+      <visual name="front_tube">
+        <geometry>
+          <cylinder radius="0.0575" length="0.526"/>
+        </geometry>
+        <origin xyz="0.1495 0 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="rear_tube">
+        <geometry>
+          <cylinder radius="0.0575" length="0.526"/>
+        </geometry>
+        <origin xyz="-0.1495 0 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <!-- Collision. For Simulation -->
+      <collision name="mallard_box">        
+        <geometry> 
+          <box size="0.414 0.526 0.234"/>
+        </geometry>
+        <origin xyz="0 0 -0.0065"/>
+      </collision>
+
+     
+      <!-- chassis physics -->
+      <inertial>
+        <origin xyz="0 0 -0.019" rpy="0 0 0"/>
+        <mass value="10.5"/>
+        <inertia ixx="0.17" ixy="0.0" ixz="0.0" iyy="0.25" iyz="0.0" izz="0.40"/>
+      </inertial>
+
+      <!-- The <limit> tag indicates where the buoyancy force 
+      begins to decrease when approaching the water surface -->
+      <buoyancy>
+          <!-- Compensation coefficient is buoyancy force to weight ratio. Mallard
+               buoyancy force is 11.52kg, weight is10.5kg.   -->
+          <compensation>1.2</compensation>
+          <origin xyz= "0 0 0"/>
+          <limit radius="0.1"/>
+          <damping xyz="120 120 120" rpy="2 2 2"/>
+      </buoyancy>
+  </link>
+
+  <gazebo reference="base_link">
+      <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <xacro:lidar
+		parent="base_link"
+		lidar_name="laser"
+    mass="0.27"
+		lidar_topic="scan"
+		update_rate="15">
+    <origin xyz="0.154 0 0.1325"/>
+	</xacro:lidar> 
+
+  <!-- Ballast -->
+  <!-- <xacro:ballast name="ballast_1" mass="0.14" xyz=" 0.225 -0.25 0.076" rpy="${PI/2} 0 0"/> -->
+  <!-- <xacro:ballast name="ballast_2" mass="0.02" xyz="-0.225 -0.25 0.076" rpy="${PI/2} 0 0"/> -->
+
+  <xacro:thruster_link name="thr_front_left"   xyz="0.154 0.199 -0.117" rpy="0 ${PI/2} ${-PI/4}"/>
+  <xacro:thruster_link name="thr_front_right"   xyz="0.154 -0.199 -0.117" rpy="0 ${PI/2} ${PI/4}"/>
+  <xacro:thruster_link name="thr_rear_left"   xyz="-0.154 0.199 -0.117" rpy="0 ${-PI/2} ${PI/4}"/>
+  <xacro:thruster_link name="thr_rear_right"   xyz="-0.154 -0.199 -0.117" rpy="0 ${-PI/2} ${-PI/4}"/>
+
+  <!-- FreeFloating plugin -->
+  <gazebo>
+    <plugin name="freefloating_gazebo_control" filename="libfreefloating_gazebo_control.so">
+          <switchService>switch</switchService>
+          <updateRate>100</updateRate>
+          <link>base_link</link>
+
+                <!-- THRUST CONTROL -->
+                <!--    these two thrusters are actually orientable, so the map should not be hard-coded 
+                        the thruster name is the name of the corresponding link --> 
+                <thruster>
+                    <effort>10</effort>
+                    <name>thr_front_left</name>
+                </thruster>
+
+                <thruster>
+                    <effort>10</effort>
+                    <name>thr_front_right</name>
+                </thruster>
+
+                <thruster>
+                    <effort>10</effort>
+                    <name>thr_rear_left</name>
+                </thruster>
+
+                <thruster>
+                    <effort>10</effort>
+                    <name>thr_rear_right</name>
+                </thruster>
+                
+                <!-- <map> describes where the force or torque is applied
+                with respect to body_link frame. Needs at leats one of them otherwise plugin won't work  --> 
+                <thruster>
+                    <map>0 1 0 0 0 0</map>
+                    <effort>2</effort>
+                </thruster>
+
+      </plugin>
+  </gazebo>
+
+
+</robot>

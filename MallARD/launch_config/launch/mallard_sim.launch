@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Get MALLARD_VERSION -->
+  <arg name="ARG_MALLARD_VERSION" value="$(optenv MALLARD_VERSION 001_SIM)" /> 
+  <!-- Get MALLARD_AUTONOMOUS. 1: Autonomous Mode. 0: Manual Mode. -->
+  <arg name="ARG_MALLARD_AUTONOMOUS" value="$(optenv MALLARD_AUTONOMOUS 0)" />
+
+
+  <!-- Base Station -->
+  <include file="$(find launch_config)/launch/mallard_base_station.launch"/>
+
+  <!-- Thrust Allocation - cmd_vel to individual thruster commands -->
+  <node pkg="control_nodes" type="cmd2thruster.py" name="Cmd2thr" output="screen"/>
+
+  <!-- SLAM -->
+  <include file="$(find launch_config)/launch/sensor/hector.launch"/>
+
+  <!-- 3D visualisation "RViz" -->
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find launch_config)/cfg/rviz/mallard_rviz.rviz" />
+  
+
+  <!-- Autonomous Mode -->
+  <group if="$(arg ARG_MALLARD_AUTONOMOUS)">
+    <!-- local planner -->
+    <node pkg="mallard_autonomy" type="local_planner_cls.py" name="local_planner" output="screen"/>
+
+    <!-- trajectory tracking conroller -->
+    <node pkg="mallard_autonomy" type="traj_control.py" name="trajectory_control" output="screen">
+        <rosparam file="$(find launch_config)/$(arg ARG_MALLARD_VERSION)/cfg/yaml/$(arg ARG_MALLARD_VERSION).yaml" command="load"/>
+    </node>
+  </group>
+
+ </launch>

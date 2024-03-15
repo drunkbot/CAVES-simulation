@@ -1,0 +1,14 @@
+# params for mallard
+
+#joystick gains
+cfg_joy_linear_gain: 0.25
+cfg_joy_angular_gain: 0.15
+
+#control parameters
+cfg_kp: 1.0
+cfg_kd: 0.5
+cfg_kp_psi: 0.4
+cfg_kd_psi: 0.2
+cfg_lim: 0.4
+cfg_lim_psi: 0.2
+cfg_nv: 4

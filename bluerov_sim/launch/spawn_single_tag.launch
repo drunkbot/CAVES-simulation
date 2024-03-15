@@ -1,0 +1,3 @@
+<launch>
+    <node name="tank_spawner" output="screen" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find bluerov_sim)/models/apriltag_36_11_00008/model.sdf" />
+</launch>

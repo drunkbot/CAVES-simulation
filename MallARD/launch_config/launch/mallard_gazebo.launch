@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Find model and set other parameters -->
+  <arg name="model" default="$(find launch_config)/urdf/mallard_main_001_SIM.xacro"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="gz" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+
+  <!-- Gazebo world with desired characteristics as world_name -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="gui" value="$(arg gz)" />
+    <arg name="paused" value="false"/>
+    <arg name="world_name" value="$(find launch_config)/world/pond_w_floor.world"/>
+  </include>
+
+  <!-- Robot generation in Gazebo. Must be in the same name space for plugin to work -->
+  <group ns="mallard">
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+    
+    <node name="spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-urdf -model mallard -param robot_description -x 0 -y 0 -z 1 -R 0 -P 0 -Y 0" />
+
+    <!-- Thrusters control -->
+    <!-- Load controller configurations (vehicle and arm) from YAML file to parameter server -->
+    <rosparam file="$(find launch_config)/cfg/yaml/vectored_mallard.yaml" command="load"/>
+
+    <group ns="thrusters">
+        <param name="robot_description" command="$(find xacro)/xacro $(find launch_config)/urdf/control_thrusters.urdf"/>
+    </group>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"/>
+  </group>
+
+ </launch>

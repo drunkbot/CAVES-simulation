@@ -1,0 +1,57 @@
+<launch>
+    <arg name="vehicle_name1" default="bluerov" />
+    <arg name="vehicle_name2" default="mallard" />
+    <!-- Vehicle spawn position so that tags are seen -->
+    <arg name="x" default="0.7" />
+    <arg name="y" default="2.0" />
+    <arg name="z" default="-0.7" />
+    <arg name="P" default="0.0" />
+    <arg name="R" default="0.0" />
+    <arg name="Y" default="1.57" />
+    <arg name="camera" default="true" />
+    <!-- Find model and set other parameters -->
+    <arg name="model" default="$(find launch_config)/urdf/mallard_main_001_SIM.xacro"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="gz" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+
+
+    <!-- <include file="$(find bluerov_sim)/launch/gazebo_base.launch" /> -->
+    <include file="$(find bluerov_sim)/launch/gazebo_tags.launch" />
+    <include file="$(find rov_visp)/launch/wake_camera.launch" />
+    <!-- <include file="$(find bluerov_sim)/launch/spawn_single_tag.launch" /> -->
+
+    <!-- spawn BlueROV model -->
+    <group ns="$(arg vehicle_name1)">
+        <include file="$(find bluerov_sim)/launch/spawn_vehicle.launch">
+            <arg name="camera" value="$(arg camera)" />
+            <arg name="x" value="$(arg x)" />
+            <arg name="y" value="$(arg y)" />
+            <arg name="z" value="$(arg z)" />
+            <arg name="R" default="$(arg R)" />
+            <arg name="P" default="$(arg P)" />
+            <arg name="Y" default="$(arg Y)" />
+        </include>
+        <!-- <node name="keyboard" pkg="bluerov_sim" type="keyboard_control.py" output="screen" /> -->
+        <node name="mixer" pkg="bluerov_sim" type="mixer.py" />
+    </group>
+
+    <group ns="mallard">
+        <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+        
+        <node name="spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+            args="-urdf -model mallard -param robot_description -x 0.7 -y 1 -z 1 -R 0 -P 0 -Y 0" />
+
+        <!-- Thrusters control -->
+        <!-- Load controller configurations (vehicle and arm) from YAML file to parameter server -->
+        <rosparam file="$(find launch_config)/cfg/yaml/vectored_mallard.yaml" command="load"/>
+
+        <group ns="thrusters">
+            <param name="robot_description" command="$(find xacro)/xacro $(find launch_config)/urdf/control_thrusters.urdf"/>
+        </group>
+        
+        <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"/>
+    </group>
+</launch>

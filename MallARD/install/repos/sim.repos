@@ -1,0 +1,9 @@
+repositories:
+  hector_slam:
+    type: git
+    url: git@github.com:EEEManchester/hector_slam.git
+    version: mallard
+  freefloating_gazebo:
+    type: git
+    url: git@github.com:EEEManchester/freefloating_gazebo.git
+    version: master

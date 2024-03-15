@@ -1,0 +1,13 @@
+repositories:
+  hector_slam:
+    type: git
+    url: git@github.com:EEEManchester/hector_slam.git
+    version: mallard
+  mavlink-gbp-release:
+    type: git
+    url: git@github.com:EEEManchester/mavlink-gbp-release.git
+    version: release/melodic/mavlink
+  mavros_mallard:
+    type: git
+    url: git@github.com:EEEManchester/mavros_mallard.git
+    version: master

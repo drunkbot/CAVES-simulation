@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Get MALLARD_VERSION -->
+    <arg name="ARG_MALLARD_VERSION" value="$(optenv MALLARD_VERSION 001_EL)" /> 
+    <!-- Get MALLARD_AUTONOMOUS. 1: Autonomous Mode. 0: Manual Mode. -->
+    <arg name="ARG_MALLARD_AUTONOMOUS" value="$(optenv MALLARD_AUTONOMOUS 0)" />
+    <!-- for Robot model. URDF/xacro -->
+    <arg name="model" default="$(find launch_config)/urdf/mallard_main_001_EL.xacro"/>
+        
+    <!-- tf -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_base_link" args="0 0 0 0 0 0 1 map base_link 20" /> -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.045 0 0.22 0 0 0 1 base_link laser 20" />
+    <node pkg="control_nodes" type="waitfortransform.py" name="tf_waitfortransform" output="screen"/> -->
+    <!-- <node name="mallard_tf_broadcaster" pkg="mallard_tf" type="mallard_tf_broadcaster.py" respawn="false" output="screen" /> -->
+
+    <!-- rosserial -->
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserialvl">
+        <param name="port" value="/dev/ttyUSB0" />
+    </node>
+
+    <!-- for El-MallARD control -->
+    <node pkg="el_mallard" type="el_dynamics.py" name="el_dynamics_node" output="screen">
+        <rosparam file="$(find launch_config)/$(arg ARG_MALLARD_VERSION)/cfg/yaml/$(arg ARG_MALLARD_VERSION).yaml" command="load"/>
+    </node>
+    
+    <!-- Robot model. URDF/xacro -->
+    <group ns="mallard">
+        <param name="robot_description" command="$(find xacro)/xacro $(arg model)"/>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+        <!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/> -->
+    </group>
+
+    <!-- modified Scan for RViz -->
+    <!-- <node pkg="control_nodes" type="scanViz.py" name="scan_viz">
+        <param name="delay" value="0.5" />
+    </node> -->
+
+    <!-- Autonomous Mode -->
+    <group if="$(arg ARG_MALLARD_AUTONOMOUS)">
+        <!-- Lidar -->
+        <include file="$(find launch_config)/launch/sensor/sick_lms.launch"/>
+        <!-- <include file="$(find launch_config)/launch/sensor/sick_tim.launch"/> -->
+
+        <!-- SLAM -->
+        <include file="$(find launch_config)/launch/sensor/hector.launch"/>
+
+        <!-- local planner -->
+        <node pkg="mallard_autonomy" type="local_planner_cls.py" name="local_planner" output="screen"/>
+
+        <!-- trajectory tracking conroller -->
+        <node pkg="mallard_autonomy" type="traj_control.py" name="trajectory_control" output="screen">
+            <rosparam file="$(find launch_config)/$(arg ARG_MALLARD_VERSION)/cfg/yaml/$(arg ARG_MALLARD_VERSION).yaml" command="load"/>
+        </node>
+    </group>
+</launch>

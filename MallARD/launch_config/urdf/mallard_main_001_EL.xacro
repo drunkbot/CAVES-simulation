@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<robot name="mallard" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find launch_config)/urdf/lidar_sensor_sick_lms.xacro"/>
+
+  <!-- Thrusters components & constants -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="tr1" value="0.009" />
+  <xacro:property name="tl1" value="0.02" />
+  <xacro:property name="tr2" value="0.05" />
+  <xacro:property name="tl2" value="0.05" />
+
+
+  <link name="base_link">
+      <!-- Body -->
+      <visual name="body">
+        <geometry> 
+          <box size="0.4 0.22 0.06"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="0.9 0.9 0 1.0"/>
+        </material>
+        <origin  xyz="0 0 0"/>
+      </visual>
+
+      <!-- Wheels -->
+      <visual name="wheel_top_left">
+        <geometry> 
+          <cylinder length="${tl2}" radius="${tr2}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="0.15 0.155 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_top_left_shaft">
+        <geometry> 
+          <cylinder length="${tl1}" radius="${tr1}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="0.15 ${0.155 - (tl1/2 + tl2/2)} 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_top_right">
+        <geometry> 
+          <cylinder length="${tl2}" radius="${tr2}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="0.15 -0.155 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_top_right_shaft">
+        <geometry> 
+          <cylinder length="${tl1}" radius="${tr1}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="0.15 ${-0.155 + (tl1/2 + tl2/2)} 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_bottom_left">
+        <geometry> 
+          <cylinder length="${tl2}" radius="${tr2}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="-0.15 0.155 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_bottom_left_shaft">
+        <geometry> 
+          <cylinder length="${tl1}" radius="${tr1}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="-0.15 ${0.155 - (tl1/2 + tl2/2)} 0" rpy="${PI/2} 0 0"/>
+      </visual>
+      
+      <visual name="wheel_bottom_right">
+        <geometry> 
+          <cylinder length="${tl2}" radius="${tr2}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="-0.15 -0.155 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+      <visual name="wheel_bottom_right_shaft">
+        <geometry> 
+          <cylinder length="${tl1}" radius="${tr1}"/>
+        </geometry>
+        <material name="dark grey">
+          <color rgba="0.3 0.3 0.3 1"/>
+        </material>
+        <origin  xyz="-0.15 ${-0.155 + (tl1/2 + tl2/2)} 0" rpy="${PI/2} 0 0"/>
+      </visual>
+
+
+      <!-- Collision. For Simulation -->
+      <collision name="mallard_box">        
+        <geometry> 
+          <box size="0.4 0.36 0.3"/>
+        </geometry>
+        <origin xyz="0 0 -0.1"/>
+      </collision>
+
+     
+      <!-- chassis physics -->
+      <inertial>
+        <origin xyz="0 0 -0.019" rpy="0 0 0"/>
+        <mass value="10.5"/>
+        <inertia ixx="0.17" ixy="0.0" ixz="0.0" iyy="0.25" iyz="0.0" izz="0.40"/>
+      </inertial>
+
+      <!-- The <limit> tag indicates where the buoyancy force 
+      begins to decrease when approaching the water surface -->
+      <buoyancy>
+          <!-- Compensation coefficient is buoyancy force to weight ratio. Mallard
+               buoyancy force is 11.52kg, weight is10.5kg.   -->
+          <compensation>1.2</compensation>
+          <origin xyz= "0 0 0"/>
+          <limit radius="0.1"/>
+          <damping xyz="120 120 120" rpy="2 2 2"/>
+      </buoyancy>
+  </link>
+
+  <gazebo reference="base_link">
+      <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <xacro:lidar
+		parent="base_link"
+		lidar_name="laser"
+    mass="0.27"
+		lidar_topic="scan"
+		update_rate="15">
+    <origin xyz="0.045 0 0.22"/>
+	</xacro:lidar> 
+
+</robot>
