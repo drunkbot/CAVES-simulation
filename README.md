@@ -5,6 +5,6 @@ instructions to be added.
 
 This package was built based on the following repo: 
 
-[Github Pages](https://hippocampusrobotics.github.io/fav_docs/)
+[TUHH BlueROV simulation](https://hippocampusrobotics.github.io/fav_docs/)
 
-[Github Pages](https://github.com/EEEManchester/MallARD_Sim_2)
+[Manchester MallARD simulation](https://github.com/EEEManchester/MallARD_Sim_2)
